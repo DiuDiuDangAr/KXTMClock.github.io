@@ -57,11 +57,13 @@
         }
 
         function checkIn(type) {
+            alert(`開始嘗試打卡`);
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
                     let lat = position.coords.latitude;
                     let lon = position.coords.longitude;
-                    
+
+                    alert(`確認是否有login`);
                     if (!liff.isLoggedIn()) {
                         liff.login();
                         return;
@@ -70,6 +72,7 @@
                     let profile = await liff.getProfile();
                     let userId = profile.userId;  // 改成用 getProfile() 取得 userId
 
+                    alert(`開始打POST API`);
                     fetch("https://script.google.com/macros/s/AKfycby3TcWR9YIXRm06VKYLf-XvCJ5L3cV66tm4lXqZ00A5otA-n9rMTlLn-TB3BTSGgNLxOQ/exec", {  // 這裡要填你的 Google Apps Script API 部署網址
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
