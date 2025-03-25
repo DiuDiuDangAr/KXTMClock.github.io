@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE 打卡系統</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; padding: 20px; }
+        .btn { padding: 15px; margin: 10px; font-size: 18px; border: none; cursor: pointer; }
+        .btn-start { background-color: #4CAF50; color: white; }
+        .btn-end { background-color: #f44336; color: white; }
+    </style>
+</head>
+<body>
+
+    <h2>🚀 LINE 打卡系統</h2>
+    <p>🏢 公司位置: 台北101</p>
+    <p>📍 你的位置: <span id="user-location">取得中...</span></p>
+    <p>📏 距離: <span id="distance">計算中...</span></p>
+
+    <button class="btn btn-start" onclick="checkIn('上班')">🔵 上班打卡</button>
+    <button class="btn btn-end" onclick="checkIn('下班')">🔴 下班打卡</button>
+
+    <h3>🕒 打卡記錄</h3>
+    <ul id="checkin-log"></ul>
+
+    <script>
+        let liffId = "你的_LIFF_ID";
+        let companyLat = 25.0330, companyLon = 121.5654;
+
+        liff.init({ liffId })
+            .then(() => { if (!liff.isLoggedIn()) liff.login(); })
+            .catch(err => console.error("LIFF 初始化失敗", err));
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                let lat = position.coords.latitude;
+                let lon = position.coords.longitude;
+                document.getElementById("user-location").innerText = `${lat}, ${lon}`;
+                calculateDistance(lat, lon);
+            },
+            (error) => { console.error("無法取得 GPS", error); }
+        );
+
+        function calculateDistance(lat, lon) {
+            const R = 6371e3;
+            const toRad = x => x * Math.PI / 180;
+            let dLat = toRad(companyLat - lat);
+            let dLon = toRad(companyLon - lon);
+            let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(toRad(lat)) * Math.cos(toRad(companyLat)) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            let distance = R * c;
+            document.getElementById("distance").innerText = `${Math.round(distance)} 公尺`;
+        }
+
+        function checkIn(type) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    let lat = position.coords.latitude;
+                    let lon = position.coords.longitude;
+                    let userId = liff.getDecodedIDToken()?.sub;
+
+                    fetch("http://你的伺服器/checkin", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ userId, latitude: lat, longitude: lon, type })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`${type} 打卡成功！`);
+                            let log = document.getElementById("checkin-log");
+                            let now = new Date().toLocaleTimeString();
+                            log.innerHTML += `<li>✅ ${now} ${type}</li>`;
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(err => console.error("打卡失敗", err));
+                },
+                (error) => { console.error("無法取得 GPS", error); }
+            );
+        }
+    </script>
+</body>
+</html>
