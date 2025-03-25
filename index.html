@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINE 打卡系統</title>
+    <title>KX天母店 LINE 打卡系統(測試中)</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         body { text-align: center; font-family: Arial, sans-serif; padding: 20px; }
@@ -14,8 +14,8 @@
 </head>
 <body>
 
-    <h2>🚀 LINE 打卡系統</h2>
-    <p>🏢 公司位置: 台北101</p>
+    <h2>🚀 LINE 打卡系統(測試中）</h2>
+    <p>🏢 公司位置: KX天母店</p>
     <p>📍 你的位置: <span id="user-location">取得中...</span></p>
     <p>📏 距離: <span id="distance">計算中...</span></p>
 
@@ -26,8 +26,8 @@
     <ul id="checkin-log"></ul>
 
     <script>
-        let liffId = "你的_LIFF_ID";
-        let companyLat = 25.0330, companyLon = 121.5654;
+        let liffId = "2007124644-3mXZOlvQ";
+        let companyLat = 25.107152709229346, companyLon = 121.53031527116408;
 
         liff.init({ liffId })
             .then(() => { if (!liff.isLoggedIn()) liff.login(); })
