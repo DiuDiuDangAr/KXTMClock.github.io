@@ -89,9 +89,9 @@
                             alert(data.message);
                         }
                     })
-                    .catch(err => console.error("打卡失敗", err));
+                    .catch(err => alert("打卡失敗", err));
                 },
-                (error) => { console.error("無法取得 GPS", error); }
+                (error) => { alert("無法取得 GPS", error); }
             );
         }
 
